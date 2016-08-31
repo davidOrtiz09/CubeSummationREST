@@ -1,6 +1,7 @@
-import org.scalatestplus.play.PlaySpec
+import akka.stream.Materializer
+import org.scalatestplus.play.{OneAppPerSuite, PlaySpec}
+import play.api.libs.json.Json
 import service.controllers.Application
-
 import scala.concurrent.Future
 import play.api.mvc._
 import play.api.test._
@@ -10,7 +11,9 @@ import play.api.test.Helpers._
   * Unidad de Test donde se prueban las funcionalidades
   * del controlador de la aplicacion
   */
-class ApplicationSpec extends PlaySpec with Results {
+class ApplicationSpec extends PlaySpec with Results with OneAppPerSuite {
+
+  implicit lazy val materializer: Materializer = app.materializer
 
   "Para comprobar que el servidor esta funcionando" should {
     val respuesta = "Todo esta funcionando"
@@ -22,6 +25,23 @@ class ApplicationSpec extends PlaySpec with Results {
       bodyText mustBe respuesta
     }
   }
+
+  "Para comprobar que el cube summation funciona " should {
+    val respuesta = "mapeo de entidades exitoso"
+
+    "mostrar que los request se mapean correctamente" in {
+
+      val body = Json.parse(
+        """{ "t": 2 , "cases":[{"n":2 , "m":2 ,"operations":["UPDATE 2 2 2 4" , "QUERY 1 1 1 3 3 3"]} ,{"n":2 , "m":2 ,"operations":["UPDATE 2 2 2 4" , "QUERY 1 1 1 3 3 3"]}]}""")
+
+      val controller = new Application()
+      val route = "/cube/execute/summation"
+      val result = controller.executeCubeSummation.apply(FakeRequest(POST, route).withBody(body))
+      val bodyText: String = contentAsString(result)
+      bodyText mustBe respuesta
+    }
+  }
+
 
 
 }
