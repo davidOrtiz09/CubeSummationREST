@@ -1,11 +1,10 @@
-import controllers.Application
 import org.scalatestplus.play.PlaySpec
+import service.controllers.Application
 
 import scala.concurrent.Future
 import play.api.mvc._
 import play.api.test._
 import play.api.test.Helpers._
-
 
 /**
   * Unidad de Test donde se prueban las funcionalidades
