@@ -14,7 +14,6 @@ https://www.hackerrank.com/challenges/cube-summation
 |   libreria         |   Version         | 
 |   -------------    |   -------------   |
 |   (org.scalatestplus.play)                                                    |   1.5.0  |
-|   (org.scalatest)                                                             |   3.0.0  |
 |   (https://www.playframework.com/)                                            |   2.5.6  |
 
 
