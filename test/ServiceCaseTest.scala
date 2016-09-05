@@ -12,7 +12,7 @@ import scala.concurrent.Future
   * Unidad de Test donde se prueban las funcionalidades
   * del controlador de la aplicacion
   */
-class ApplicationSpec extends PlaySpec with Results with OneAppPerSuite {
+class ServiceCaseTest extends PlaySpec with Results with OneAppPerSuite {
 
   implicit lazy val materializer: Materializer = app.materializer
 

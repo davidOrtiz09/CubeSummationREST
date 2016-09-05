@@ -6,10 +6,17 @@ import service.request.{CubeSummationRequest, OperationRequest}
 import scala.util.{Success, Try}
 
 /**
-  * Created by davidorto on 30/08/16.
+  * Clase donde se encanpazula toda la logica de negocio.
   */
 case class CubeSummationLogic() {
 
+
+  /**
+    * Calculas todas las operaciones sobre los cubos
+    *
+    * @param request : Request http con toda la info de los casos
+    * @return
+    */
   def calculateCubeOperations(request: CubeSummationRequest): Try[List[String]] = {
     Try {
       val cubeCreation: List[(Cube, List[Option[Operation]])] = request.cases.map(op => convertCubesAndOprations(op))
@@ -20,6 +27,13 @@ case class CubeSummationLogic() {
   }
 
 
+  /**
+    * Convierte el request http de operaciones y lo estrcutura a logica de negocio para extraer sus opraciones
+    * y crear el cubo correspondeinte al caso
+    *
+    * @param request : Request http con toda la info de los casos
+    * @return
+    */
   private def convertCubesAndOprations(request: OperationRequest): (Cube, List[Option[Operation]]) = {
 
       val patternUpdate = "(UPDATE)(.*)".r
@@ -35,21 +49,30 @@ case class CubeSummationLogic() {
         }
       }
       (cube, operations)
-    }
+  }
 
 
+  /**
+    * Ejecuta cada oepracion existente sobre el cubo
+    * y retorna su valor
+    *
+    * @param op : Lista de posibles operaciones y su correspondiente cubo
+    * @return : Lista de resultados.
+    */
   private def calculateEachOperation(op: (Cube, List[Option[Operation]])): List[String] = {
     val cube = op._1
     val posibleOeprations = op._2
     val operations: List[Operation] = posibleOeprations.collect { case Some(res) => res }
-    val queryOperations: List[Try[String]] = operations.collect { case ope: QueryOperation =>
-      cube.query(ope.x1, ope.y1, ope.z1, ope.x2, ope.y2, ope.z2)
+
+    val queryOperations = operations.map {
+      case ope: QueryOperation =>
+        cube.query(ope.x1, ope.y1, ope.z1, ope.x2, ope.y2, ope.z2)
+      case ope: UpdateOperation =>
+        val position = (ope.x, ope.y, ope.z)
+        cube.update(position, ope.w)
     }
-    val updateOeprations = operations.collect { case ope: UpdateOperation =>
-      val position = (ope.x, ope.y, ope.z)
-      cube.update(position, ope.w)
-    }
-    queryOperations.collect { case Success(res) => res }
+
+    queryOperations.collect { case Success(res) => res }.filter(x => x != "")
   }
 
 }
