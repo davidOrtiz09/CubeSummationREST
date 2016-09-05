@@ -1,15 +1,18 @@
 package service.controllers
 
 import logic.CubeSummationLogic
-import play.api.libs.json.{JsError, JsResult, JsSuccess}
+import play.api.libs.json.{JsError, JsResult, JsSuccess, Json}
 import play.api.mvc._
 import service.request.CubeSummationRequest
 import service.request.CubeSummationRequest._
+
+import scala.util.{Failure, Success}
 
 /**
   * Controlador donde estan todos los servicios del API.
   */
 class Application extends Controller {
+
 
    /**
     * servicio que verifica que el servidor esta funcionando
@@ -23,11 +26,14 @@ class Application extends Controller {
     val validation:JsResult[CubeSummationRequest] = request.body.validate[CubeSummationRequest]
     validation match{
       case JsSuccess(res, a) =>
-        val a = CubeSummationLogic()
-        a.calculateCubeOperations(res)
-        Ok("mapeo de entidades exitoso")
+        val logic = CubeSummationLogic()
+        val result = logic.calculateCubeOperations(res)
+        result match {
+          case Success(resOp) => Ok(Json.toJson(resOp))
+          case Failure(err) => InternalServerError("Operaciones Erroneas")
+        }
       case JsError(err) => println("Errors: " + JsError.toJson(err).toString())
-        InternalServerError("Error en el mapeo del request")
+        BadRequest("Error en el mapeo del request")
     }
   }
 }

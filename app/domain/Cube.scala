@@ -12,6 +12,7 @@ case class Cube(size:Int) {
 
   /**
     * Constructor del cubo
+    *
     * @param size: Tamano del cubo
     */
   def apply(size:Int) = {
@@ -22,6 +23,7 @@ case class Cube(size:Int) {
   /**
     * Consulta el valor que se encuentra dentro
     * de la cordenada dada dentro del cubo.
+    *
     * @param x1: cordenada x1
     * @param y1: cordenada y1
     * @param z1: cordeanda z1
@@ -30,23 +32,26 @@ case class Cube(size:Int) {
     * @param z2: cordenada z2
     * @return
     */
-  def query(x1:Int,y1:Int,z1:Int,x2:Int,y2:Int,z2:Int): Try[Int] ={
+  def query(x1: Int, y1: Int, z1: Int, x2: Int, y2: Int, z2: Int): Try[String] = {
     Try {
       val position = (x1 - x2, y1 - y2, z1 - z2)
       val result = cubeMatrix(position._1)(position._2)(position._3)
-      result
+      result.toString
     }
   }
 
   /**
     * actualiza el valor de las cordenadas
     * dadas en el cubo
+    *
     * @param position: Cordenadas que se queiren actualizar en el cubo
     * @param value: Valor que se va a insertar en la matriz
     * @return
     */
   def update(position:(Int,Int,Int),value:Int):Try[Unit] = {
-    Try(cubeMatrix(position._1)(position._2)(position._3) = value)
+    Try {
+      cubeMatrix(position._1)(position._2)(position._3) = value
+    }
   }
 
 }

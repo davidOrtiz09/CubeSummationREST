@@ -1,11 +1,12 @@
 import akka.stream.Materializer
 import org.scalatestplus.play.{OneAppPerSuite, PlaySpec}
 import play.api.libs.json.Json
-import service.controllers.Application
-import scala.concurrent.Future
 import play.api.mvc._
-import play.api.test._
 import play.api.test.Helpers._
+import play.api.test._
+import service.controllers.Application
+
+import scala.concurrent.Future
 
 /**
   * Unidad de Test donde se prueban las funcionalidades
@@ -37,8 +38,20 @@ class ApplicationSpec extends PlaySpec with Results with OneAppPerSuite {
       val controller = new Application()
       val route = "/cube/execute/summation"
       val result = controller.executeCubeSummation.apply(FakeRequest(POST, route).withBody(body))
-      val bodyText: String = contentAsString(result)
-      bodyText mustBe respuesta
+      val serviceStatus: Port = status(result)
+      serviceStatus mustBe 200
+    }
+
+    "mostrar error al enviar un request mal formado" in {
+
+      val body = Json.parse(
+        """{ "t": 2 , "cases":[{ "m":2 ,"operations":["UPDATE 2 4" , "QUERY 1 1 1 3 3 3"]} ,{"n":2 , "m":2 ,"operations":["UPDATE 2 2 2 4" , "QUERY 1 1 1 3 3 3"]}]}""")
+
+      val controller = new Application()
+      val route = "/cube/execute/summation"
+      val result = controller.executeCubeSummation.apply(FakeRequest(POST, route).withBody(body))
+      val serviceStatus: Port = status(result)
+      serviceStatus mustBe 400
     }
   }
 
