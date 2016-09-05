@@ -35,16 +35,12 @@ case class Cube(size:Int) {
   def query(x1: Int, y1: Int, z1: Int, x2: Int, y2: Int, z2: Int): Try[String] = {
     Try {
       var resultado = 0
-
-      for (i <- x1 to x2) {
-        for (j <- y1 to y2) {
-          for (k <- z1 to z2) {
-            resultado = resultado + cubeMatrix(i)(j)(k)
-          }
-        }
-      }
+      for {
+        i <- x1 to x2
+        j <- y1 to y2
+        k <- z1 to z2
+      } resultado = resultado + cubeMatrix(i)(j)(k)
       resultado.toString
-
     }
   }
 
